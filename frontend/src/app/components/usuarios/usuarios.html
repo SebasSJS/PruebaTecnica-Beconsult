@@ -1,0 +1,23 @@
+<div class="dashboard-container">
+    <div class="header">
+      <h2>Gestión de Usuarios - Beconsult</h2>
+      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+  
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre de Usuario</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of listaUsuarios">
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

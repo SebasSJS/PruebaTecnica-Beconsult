@@ -1,6 +1,6 @@
 @Host = http://localhost:5203
 
-### 1. CREAR UN USUARIO NUEVO
+### prueba 1 _ usuario
 POST {{Host}}/api/users
 Content-Type: application/json
 
@@ -10,11 +10,21 @@ Content-Type: application/json
   "password": "Password123!"
 }
 
-### 2. INTENTAR HACER LOGIN CON ESE USUARIO
+### prueba 2 _ login
 POST {{Host}}/api/auth/login
 Content-Type: application/json
 
 {
   "username": "admin_prueba",
+  "password": "Password123!"
+}
+
+### prueba 3 _ usuario
+POST {{Host}}/api/users
+Content-Type: application/json
+
+{
+  "username": "sebastian_admin",
+  "email": "sebastian@beconsult.com",
   "password": "Password123!"
 }
