@@ -1,22 +1,64 @@
-<div class="dashboard-container">
-    <div class="header">
-      <h2>Gestión de Usuarios - Beconsult</h2>
-      <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+<div class="container">
+    <header class="header">
+      <h2>Mantenimiento de Usuarios</h2>
+      <div class="header-buttons">
+        <button class="btn btn-primary" (click)="abrirFormularioNuevo()">+ Nuevo Usuario</button>
+        <button class="btn btn-danger" (click)="logout()">Cerrar Sesión</button>
+      </div>
+    </header>
+  
+    <div class="modal-overlay" *ngIf="mostrarFormulario">
+      <div class="modal-content">
+        <h3>{{ usuarioEnEdicion ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h3>
+        
+        <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" formControlName="username">
+          </div>
+  
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" formControlName="email">
+          </div>
+  
+          <div class="form-group">
+            <label>Contraseña {{ usuarioEnEdicion ? '(Opcional)' : '' }}</label>
+            <input type="password" formControlName="password" placeholder="***">
+          </div>
+  
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="cerrarFormulario()">Cancelar</button>
+            <button type="submit" class="btn btn-success" [disabled]="usuarioForm.invalid">Guardar</button>
+          </div>
+        </form>
+      </div>
     </div>
   
-    <table class="user-table">
+    <table class="table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Nombre de Usuario</th>
+          <th>Username</th>
           <th>Email</th>
+          <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of listaUsuarios">
-          <td>{{ user.id }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
+        <tr *ngFor="let u of listaUsuarios">
+          <td>{{ u.id }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            <span class="badge" [ngClass]="u.estado ? 'badge-active' : 'badge-inactive'">
+              {{ u.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="action-buttons">
+            <button class="btn btn-warning" (click)="abrirFormularioEditar(u)">Editar</button>
+            <button class="btn btn-danger-outline" (click)="eliminarUsuario(u.id)">Eliminar</button>
+          </td>
         </tr>
       </tbody>
     </table>

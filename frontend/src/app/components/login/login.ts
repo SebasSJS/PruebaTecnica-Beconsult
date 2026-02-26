@@ -1,28 +1,46 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
-  // Capturamos los datos
-  credentials = { username: '', password: '' };
+export class Login implements OnInit { 
+  loginForm!: FormGroup; // formulario reactivo
   errorMessage = '';
 
-  constructor(private authService: Auth, private router: Router) {}
+  // Inyectamos el FormBuilder con tus otros servicios
+  constructor(
+    private fb: FormBuilder, 
+    private authService: Auth, 
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    // Inicializamos el formulario
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+  }
 
   onLogin() {
-    this.authService.login(this.credentials).subscribe({
+    // Si el formulario es inválido (campos vacíos), detenemos la ejecución
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         console.log('¡Éxito!', response);
-        // Si es correcto, navegamos al listado
+        localStorage.setItem('isAuthenticated', 'true');
         this.router.navigate(['/usuarios']);
       },
       error: (err) => {

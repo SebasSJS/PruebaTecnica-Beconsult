@@ -20,4 +20,15 @@ export class Auth {
   getUsuarios(): Observable<any[]> {
     return this.http.get<any[]>('http://localhost:5203/api/users'); 
   }
+  crearUsuario(usuario: any): Observable<any> {
+    return this.http.post('http://localhost:5203/api/users', usuario);
+  }
+
+  actualizarUsuario(id: number, usuario: any): Observable<any> {
+    return this.http.put(`http://localhost:5203/api/users/${id}`, usuario);
+  }
+
+  eliminarUsuario(id: number): Observable<any> {
+    return this.http.delete(`http://localhost:5203/api/users/${id}`);
+  }
 }

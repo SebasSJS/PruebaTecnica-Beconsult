@@ -44,12 +44,56 @@ public class UsuariosController : ControllerBase
         {
             Username = dto.Username,
             Email = dto.Email,
-            // AQUÍ HASHEAMOS LA CONTRASEÑA ANTES DE GUARDARLA
+            // Hasheamos la contraseña antes de guardarla
             Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
 
         await _repository.CrearAsync(nuevoUsuario);
         return Ok(new { mensaje = "Usuario creado exitosamente" });
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var u = await _repository.ObtenerPorIdAsync(id);
+        if (u == null) return NotFound(new { mensaje = "Usuario no encontrado" });
+
+        // Mapeamos DTO
+        var dto = new UsuarioDto
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            Estado = u.Estado,
+            FechaCreacion = u.FechaCreacion
+        };
+
+        return Ok(dto);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(int id, [FromBody] CrearUsuarioDto dto) // Reutilizamos tu DTO
+    {
+        var usuario = await _repository.ObtenerPorIdAsync(id);
+        if (usuario == null) return NotFound(new { mensaje = "Usuario no encontrado" });
+
+        // Validar si el nuevo username ya lo tiene otra persona
+        var existe = await _repository.ObtenerPorUsernameAsync(dto.Username);
+        if (existe != null && existe.Id != id)
+            return BadRequest(new { mensaje = "El nombre de usuario ya está en uso." });
+
+        // Actualizamos datos
+        usuario.Username = dto.Username;
+        usuario.Email = dto.Email;
+
+        // Si el usuario escribe una nueva contraseña, la hasheamos. Si lo deja vacío, conserva la anterior.
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+        {
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        }
+
+        await _repository.ActualizarAsync(usuario);
+        return Ok(new { mensaje = "Usuario actualizado exitosamente" });
     }
 
     [HttpDelete("{id}")]
